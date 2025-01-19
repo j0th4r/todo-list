@@ -9,12 +9,26 @@ class todoItem {
   
 }
 
+const filterButtons = document.querySelectorAll('#btn');
+
+function resetButtonStyles() {
+  filterButtons.forEach(button => {
+    button.style.color = "";
+  });
+}
+
+const taskCount = document.querySelector('.task-count');
 const inputField = document.querySelector('#input');
-const taskCount = document.querySelector(".task-count");
+const clearBtn = document.querySelector('.clear-btn'); // Clear button
+const filterAll = document.querySelector('.all-btn');
+const filterActive = document.querySelector('.active-btn');
+const filterCompleted = document.querySelector('.completed-btn');
+filterAll.style.color = "#3A7CFD";
 
 // Initialize a task counter to increment input IDs
 let taskCounter = 0;
 let taskId = 0;
+let completedTasks = 0;
 
 // Event listener for the "Enter" key press
 inputField.addEventListener('keypress', function (event) {
@@ -25,8 +39,8 @@ inputField.addEventListener('keypress', function (event) {
     // Check if the input is not empty
     if (taskText !== "") {
       taskCounter++; // Increment the counter for unique IDs
-      taskId++; // Increment the task ID
-      
+      taskId++;
+
       // Create the outer task div
       const taskDiv = document.createElement("div");
       taskDiv.classList.add("task");
@@ -41,14 +55,18 @@ inputField.addEventListener('keypress', function (event) {
       checkbox.id = `check-task-${taskId}`;
       checkbox.classList.add("task-checkbox");
 
-      
+      // Add an event listener to update task class when checkbox is toggled
       checkbox.addEventListener('change', function () {
         if (checkbox.checked) {
-          taskCounter--; // Decrement the counter when the checkbox is checked
-          taskCount.textContent = `${taskCounter} items left`; 
+          taskDiv.classList.add("completed");
+          completedTasks++;
+          taskCounter--;
+          taskCount.textContent = `${taskCounter} items left`;
         } else {
-          taskCounter++; // Increment the counter if unchecked
-          taskCount.textContent = `${taskCounter} items left`; 
+          taskDiv.classList.remove("completed");
+          completedTasks--;
+          taskCounter++;
+          taskCount.textContent = `${taskCounter} items left`;
         }
       });
 
@@ -76,9 +94,7 @@ inputField.addEventListener('keypress', function (event) {
       // Clear the input field after adding the task
       inputField.value = "";
 
-
-      taskCount.textContent = `${taskCounter} items left`; 
-      
+      taskCount.textContent = `${taskCounter} items left`;
     } else {
       // Optionally show an error message if the input is empty
       alert("Please enter a task!");
@@ -86,15 +102,75 @@ inputField.addEventListener('keypress', function (event) {
   }
 });
 
-
-const clearBtn = document.querySelector(".clear-btn");
+// Event listener for the clear button
 clearBtn.addEventListener('click', function () {
   const taskList = document.querySelector(".task-list");
   const checkboxes = taskList.querySelectorAll(".task-checkbox:checked"); // Get all checked checkboxes
-
+  completedTasks = 0;
   checkboxes.forEach(checkbox => {
     const taskDiv = checkbox.closest(".task"); // Get the parent task div
     taskDiv.remove(); // Remove the task div
   });
+  taskCount.textContent = `${completedTasks} items left`;
+});
+
+// Filter Functions
+filterAll.addEventListener('click', function () {
+  resetButtonStyles();
+  filterAll.style.color = "#3A7CFD";
+  const tasks = document.querySelectorAll('.task');
+  tasks.forEach(task => {
+    task.style.display = 'flex';
+    const checkbox = task.querySelector('.task-checkbox');
+    checkbox.addEventListener('change', function () {
+      task.style.display = 'flex'
+    });
+  }); // Show all tasks
+  taskCount.textContent = `${taskCounter} items left`;
+});
+
+filterActive.addEventListener('click', function () {
+  resetButtonStyles();
+  filterActive.style.color = "#3A7CFD";
+  const tasks = document.querySelectorAll('.task');
+  tasks.forEach(task => {
+    const checkbox = task.querySelector('.task-checkbox');
+    if (checkbox.checked) {
+      task.style.display = 'none'; // Hide completed tasks
+    } else {
+      task.style.display = 'flex'; // Show active tasks
+    }
+
+    checkbox.addEventListener('change', function () {
+      if (checkbox.checked) {
+        taskCount.textContent = `${taskCounter} items left`;
+        task.style.display = 'none';
+      }
+    });
+  });
+  taskCount.textContent = `${taskCounter} items left`;
+});
+
+filterCompleted.addEventListener('click', function () {
+  resetButtonStyles();
+  filterCompleted.style.color = "#3A7CFD";
+  const tasks = document.querySelectorAll('.task');
+  tasks.forEach(task => {
+    const checkbox = task.querySelector('.task-checkbox');
+
+    if (checkbox.checked) {
+      task.style.display = 'flex'; // Show completed tasks
+    } else {
+      task.style.display = 'none'; // Hide active tasks
+    }
+
+    checkbox.addEventListener('change', function () {
+      if (!checkbox.checked) {
+        taskCount.textContent = `${completedTasks} items left`;
+        task.style.display = 'none';
+      }
+    });
+  });
+  taskCount.textContent = `${completedTasks} items left`;
 });
 

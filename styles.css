@@ -191,8 +191,14 @@ label:hover {
     font-weight: 700;
     letter-spacing: -0.19px;
     border: 1px solid var(--task-bg);
+    cursor: pointer;
+  }
+
+  button:hover {
+    color: #3A7CFD;
   }
 }
+
 
 .task-count {
   position: absolute;
@@ -215,6 +221,10 @@ label:hover {
   font-weight: 400;
   letter-spacing: -0.19px;
   cursor: pointer;
+}
+
+.clear-btn:hover {
+  color: #C8CBE7;
 }
 
 .task-container {
