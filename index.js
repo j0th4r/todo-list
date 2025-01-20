@@ -1,8 +1,25 @@
+const taskList = document.querySelector(".task-list");
+const clearBtn = document.querySelector('.clear-btn');
+const filterAll = document.querySelector('.all-btn');
+const filterActive = document.querySelector('.active-btn');
+const filterCompleted = document.querySelector('.completed-btn');
+filterAll.style.color = "#3A7CFD";
+
 function resetButtonStyles() {
   const filterButtons = document.querySelectorAll('#btn');
   filterButtons.forEach(button => {
     button.style.color = "";
   });
+}
+
+function removeTask(checkbox) {
+  const taskDiv = checkbox.closest(".task");
+  taskDiv.remove();
+  if(taskList.classList.contains('completed-active')) {
+    updateCounter("completed");
+  } else {
+    updateCounter("active");
+  }
 }
 
 function updateCounter(choice) {
@@ -49,6 +66,26 @@ class Task {
     paragraph.classList.add("task-text");
     paragraph.textContent = taskText;
 
+    const removeBtn = document.createElement("button");
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.setAttribute("width", "18");
+    svg.setAttribute("height", "18");
+    svg.setAttribute("viewBox", "0 0 18 18");
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("fill", "#494C6B");
+    path.setAttribute("fill-rule", "evenodd");
+    path.setAttribute("d", "M16.97 0l.708.707L9.546 8.84l8.132 8.132-.707.707-8.132-8.132-8.132 8.132L0 16.97l8.132-8.132L0 .707.707 0 8.84 8.132 16.971 0z");
+
+    svg.appendChild(path);
+
+    removeBtn.appendChild(svg);
+
+    removeBtn.addEventListener('click', removeTask.bind(null, checkbox));
+
+    taskContainerDiv.appendChild(removeBtn);
     taskContainerDiv.appendChild(checkbox);
     taskContainerDiv.appendChild(label);
     taskContainerDiv.appendChild(paragraph);
@@ -71,7 +108,12 @@ const addTask = (event) => {
     taskIndex++;
     inputField.value = "";
     task.createTask(taskIndex);
-    updateCounter("active");
+    if(taskList.classList.contains('completed-active')) {
+      filterCompleted.click();
+      updateCounter("completed");
+    } else {
+      updateCounter("active");
+    }
   }
 }
 
@@ -79,21 +121,14 @@ const inputField = document.querySelector('#input');
 inputField.addEventListener('keypress', addTask);
 
 
-const clearBtn = document.querySelector('.clear-btn'); // Clear button
-const filterAll = document.querySelector('.all-btn');
-const filterActive = document.querySelector('.active-btn');
-const filterCompleted = document.querySelector('.completed-btn');
-filterAll.style.color = "#3A7CFD";
-
 // Event listener for the clear button
 clearBtn.addEventListener('click', function () {
-  const taskList = document.querySelector(".task-list");
   const checkboxes = taskList.querySelectorAll(".task-checkbox:checked"); // Get all checked checkboxes
   checkboxes.forEach(checkbox => {
     const taskDiv = checkbox.closest(".task"); // Get the parent task div
     taskDiv.remove(); // Remove the task div
   });
-  if(clearBtn.classList.contains('completed-active')) {
+  if(taskList.classList.contains('completed-active')) {
     updateCounter("completed");
   } else {
     updateCounter("active");
@@ -103,7 +138,7 @@ clearBtn.addEventListener('click', function () {
 // Filter Functions
 filterAll.addEventListener('click', function () {
   resetButtonStyles();
-  clearBtn.classList.remove('completed-active');
+  taskList.classList.remove('completed-active');
   filterAll.style.color = "#3A7CFD";
   const tasks = document.querySelectorAll('.task');
   tasks.forEach(task => {
@@ -119,7 +154,7 @@ filterAll.addEventListener('click', function () {
 
 filterActive.addEventListener('click', function () {
   resetButtonStyles();
-  clearBtn.classList.remove('completed-active');
+  taskList.classList.remove('completed-active');
   filterActive.style.color = "#3A7CFD";
   const tasks = document.querySelectorAll('.task');
   tasks.forEach(task => {
@@ -142,7 +177,7 @@ filterActive.addEventListener('click', function () {
 
 filterCompleted.addEventListener('click', function () {
   resetButtonStyles();
-  clearBtn.classList.add('completed-active');
+  taskList.classList.add('completed-active');
   filterCompleted.style.color = "#3A7CFD";
   const tasks = document.querySelectorAll('.task');
   tasks.forEach(task => {
